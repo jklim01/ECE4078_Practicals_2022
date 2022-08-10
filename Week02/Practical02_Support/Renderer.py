@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 import matplotlib.transforms as transforms
 from matplotlib.lines import Line2D
+from IPython.display import display
 
 class Singleton:
     def __init__(self, cls):
@@ -31,14 +32,14 @@ class Singleton:
 
 @Singleton
 class Renderer(thrd.Thread):
-    
+
     #Make singleton
     _instance = None
-    
+
     def __init__(self):
         # Call the Thread class's init function
-        thrd.Thread.__init__(self) 
-        
+        thrd.Thread.__init__(self)
+
     def initialize(self, vis, bot, dt=0.02, max_iterations=60, realtime = False):
         self.lock = thrd.Lock()
         self.bot = bot
@@ -51,18 +52,18 @@ class Renderer(thrd.Thread):
         self.finished_cycle = False
         self.vis = vis
         self.anim = Animation()
-        
+
     def show_control_panel(self):
         self.btn_play = widgets.Button(
-            description='Play/Pause', 
-            layout=widgets.Layout(flex='1 1 0%', width='auto'), 
+            description='Play/Pause',
+            layout=widgets.Layout(flex='1 1 0%', width='auto'),
             button_style='success')
-        
+
         self.btn_play.on_click(self.pause)
-        
+
         self.btn_reset = widgets.Button(
-            description='Reset', 
-            layout=widgets.Layout(flex='1 1 0%', width='auto'), 
+            description='Reset',
+            layout=widgets.Layout(flex='1 1 0%', width='auto'),
             button_style='success')
 
         self.frame_counter = widgets.IntText(
@@ -71,21 +72,21 @@ class Renderer(thrd.Thread):
             disabled=True)
 
         self.btn_reset.on_click(self.reset)
-              
+
         controls = widgets.HBox([self.btn_play, self.btn_reset, self.frame_counter])
-                    
+
         display(controls)
-        
+
     def spawn_robot(self):
         self.vis["bot"].set_object(g.triad(1))
 #         (x, y, theta) = self.bot.get_state()
-#         self.vis["bot"].set_transform(tf.translation_matrix([x, y, 0]) 
+#         self.vis["bot"].set_transform(tf.translation_matrix([x, y, 0])
 #                       @ tf.rotation_matrix(theta, [0, 0, 1]))
         self.render()
-        
+
     def start_render_loop(self):
         if not self.is_alive():
-            self.start()          
+            self.start()
         self.initialized = True
 
     #Render Loop
@@ -93,7 +94,7 @@ class Renderer(thrd.Thread):
         while True:
             if self.paused == False:
                 self.bot.drive(self.dt)
-                
+
                 # Determine frame to plot
                 self.cur_frame += 1
                 if self.cur_frame >= self.max_cycles:
@@ -110,40 +111,40 @@ class Renderer(thrd.Thread):
             else:
                 time.sleep(0.2)
 
-            
+
     def render(self):
         self.lock.acquire()
-        
+
         (x, y, theta) = self.bot.get_state()
-        self.vis["bot"].set_transform(tf.translation_matrix([x, y, 0]) 
+        self.vis["bot"].set_transform(tf.translation_matrix([x, y, 0])
                                  @ tf.rotation_matrix(theta, [0, 0, 1]))
         self.anim.at_frame(self.vis, self.cur_frame)["bot"].set_transform(
-            tf.translation_matrix([x, y, 0]) 
+            tf.translation_matrix([x, y, 0])
             @ tf.rotation_matrix(theta, [0, 0, 1]))
 
         trail = np.array(self.bot.states).transpose()
         trail[2, :] = np.zeros(len(trail[2, :]))
         self.vis["trail"].set_object(
-            g.Line(g.PointsGeometry(trail), 
+            g.Line(g.PointsGeometry(trail),
             g.LineBasicMaterial(color=0x0000ff)))
 
-                        
+
         self.lock.release()
-        
+
     def pause(self,b=None):
         if not self.finished_cycle:
             self.paused = not self.paused
-        
+
     def reset(self, b=None):
         self.paused = True
         self.bot.reset()
-        self.cur_frame = 0 
+        self.cur_frame = 0
         self.spawn_robot()
         self.render()
         self.frame_counter.value = self.cur_frame
         self.finished_cycle = False
         self.anim = Animation()
-        
+
 class bot2D():
     def __init__(self):
         # Configuration of 2D robot in world frame, x,y = coordinates in world frame, theta=orientation
@@ -151,36 +152,36 @@ class bot2D():
         self.y = 0
         self.theta = 0
         self.states = []
-        
+
     def reset(self):
         first_state = self.states[0]
         self.x, self.y, self.theta = first_state
         del self.states[:]
         self.states = [first_state]
-        
+
     def get_state(self):
         """Return the current bicycle state. The state is in (x,y,theta) format"""
         return (self.x, self.y, self.theta)
-    
+
     def set_state(self,x=0,y=0,theta=0):
         """Sets the model new state"""
         self.x = x
         self.y = y
         self.theta = theta
         self.states.append([x, y, theta])
-        
+
 class traj_bot(bot2D):
     def __init__(self, traj):
         super().__init__()
         self.traj = traj
         self.counter = 0
         self.set_state(traj[0,0], traj[0,1], traj[0,2])
-    
+
     def drive(self, dt):
         [next_x, next_y, next_theta] = self.traj[self.counter]
         self.counter += 1
         self.set_state(next_x, next_y, next_theta)
-        
+
     def reset(self):
         super().reset()
         self.counter = 0
@@ -196,8 +197,8 @@ def display_traj(vis, trj, scale = 6):
         rend.spawn_robot()
         rend.show_control_panel()
         rend.start_render_loop()
-        
-def display_bicycle_wheels(rear_wheel, front_wheel, theta):               
+
+def display_bicycle_wheels(rear_wheel, front_wheel, theta):
     # Initialize figure
     fig = plt.figure(figsize=(5, 5))
     ax = plt.gca()
@@ -209,20 +210,20 @@ def display_bicycle_wheels(rear_wheel, front_wheel, theta):
     plt.ylabel('Y (m)',weight='bold')
 
     ax.plot(0,0)
-  
+
     rear_wheel_x = FancyArrowPatch((0,0), (0.4,0),
                                         mutation_scale=8,color='red')
     rear_wheel_y = FancyArrowPatch((0,0), (0,0.4),
                                         mutation_scale=8,color='red')
 
     front_wheel_x = FancyArrowPatch((0,0), (0.4,0),
-                                        mutation_scale=8,color='blue') 
+                                        mutation_scale=8,color='blue')
     front_wheel_y = FancyArrowPatch((0,0), (0,0.4),
                                         mutation_scale=8,color='blue')
 
     custom_lines = [Line2D([0], [0], color='red', lw=4),
                     Line2D([0], [0], color='blue', lw=4)]
-    
+
     # Apply translation and rotation as specified by current robot state
     cos_theta, sin_theta = np.cos(theta), np.sin(theta)
     Tw_rear = np.eye(3)
@@ -236,7 +237,7 @@ def display_bicycle_wheels(rear_wheel, front_wheel, theta):
     Tw_front_obj = transforms.Affine2D(Tw_front)
 
     ax_trans = ax.transData
-    
+
     rear_wheel_x.set_transform(Tw_rear_obj+ax_trans)
     rear_wheel_y.set_transform(rear_wheel_x.get_transform())
     ax.add_patch(rear_wheel_x)
@@ -247,4 +248,4 @@ def display_bicycle_wheels(rear_wheel, front_wheel, theta):
     ax.add_patch(front_wheel_x)
     ax.add_patch(front_wheel_y)
 
-    ax.legend(custom_lines, ['Rear Wheel', 'Front Wheel']) 
+    ax.legend(custom_lines, ['Rear Wheel', 'Front Wheel'])

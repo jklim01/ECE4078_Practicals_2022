@@ -1,9 +1,9 @@
 test = {
 	"name": "rrtc",
 	"points": 6,
-	"suites": [ 
+	"suites": [
 		{
-			"cases": [ 
+			"cases": [
 				{
 					"code": r"""
 >>> import sys

@@ -1,4 +1,4 @@
-# ECE4078_Practicals_2022 [<img align="right" src="https://mybinder.org/badge_logo.svg">](https://mybinder.org/v2/gh/tinsirius/ECE4078_Practicals_2022/binder)[<img align="right" src="https://deepnote.com/buttons/launch-in-deepnote-white-small.svg">](https://deepnote.com/workspace/ece4078-7216-bdf57084-6c08-4dea-a555-1d8b5ffa5d2c/project/ECE4078-Practicals-e09a2c46-66e4-4822-9f63-abca8470f17c/%2FECE4078_Practicals_2022%2FWeek01%2FPractical01_PositionAndOrientation.ipynb)[<img align="right" src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/github/tinsirius/ECE4078_Practicals_2022)
+# ECE4078_Practicals_2022 [<img align="right" src="https://mybinder.org/badge_logo.svg">](https://mybinder.org/v2/gh/tinsirius/ECE4078_Practicals_2022/main)[<img align="right" src="https://deepnote.com/buttons/launch-in-deepnote-white-small.svg">](https://deepnote.com/workspace/ece4078-7216-bdf57084-6c08-4dea-a555-1d8b5ffa5d2c/project/ECE4078-Practicals-e09a2c46-66e4-4822-9f63-abca8470f17c/%2FECE4078_Practicals_2022%2FWeek01%2FPractical01_PositionAndOrientation.ipynb)[<img align="right" src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/github/tinsirius/ECE4078_Practicals_2022)
 Repository for practicals of unit ECE4078 (Intelligent Robotics) offered in 2022.
 
 # Quick start
@@ -195,4 +195,3 @@ Once that has been completed you can attach your VSCode to the running docker co
 
 
 
->>>>>>> 7cd9e3f4bb02f06e2f65cd20ada8b3c7e657e67a
